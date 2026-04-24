@@ -65,12 +65,16 @@ nav {
   z-index: 100;
   display: flex;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: space-between;
   padding: 0 40px;
   height: 64px;
   background: rgba(255,255,255,0.93);
   backdrop-filter: blur(20px);
   border-bottom: 1px solid var(--border);
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+nav.nav-hidden {
+  transform: translateY(-100%);
 }
 .nav-links {
   display: flex;
@@ -89,15 +93,22 @@ nav {
 .nav-links a:hover { color: var(--text); }
 .nav-cta {
   font-family: var(--font) !important;
-  background: var(--text) !important;
-  color: var(--bg) !important;
+  background: var(--accent) !important;
+  color: #fff !important;
   font-weight: 600 !important;
   padding: 9px 20px;
   border-radius: 100px;
   font-size: 13.5px !important;
-  transition: opacity 0.2s !important;
+  transition: transform 0.2s, box-shadow 0.2s !important;
 }
-.nav-cta:hover { opacity: 0.75; }
+.nav-cta:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(62,122,63,0.28); }
+.nav-brand-desktop {
+  font-family: var(--font-heading);
+  font-weight: 800;
+  font-size: 15px;
+  letter-spacing: -0.3px;
+}
+
 .hamburger {
   display: none;
   flex-direction: column;
@@ -153,10 +164,9 @@ nav {
   font-weight: 600 !important;
   border-bottom: none !important;
 }
-@media(max-width:768px){
-  .nav-links { display: none; }
-  nav { padding: 0 20px; justify-content: space-between; }
-  .hamburger { display: flex; }
+@media(max-width:480px){
+  nav { display: none !important; }
+  .mobile-nav { display: none !important; }
 }
 
 /* HERO */
@@ -611,13 +621,67 @@ footer { border-top: 1px solid var(--border); padding: 32px 40px; display: flex;
   font-size: 12px; font-weight: 500;
   color: var(--muted); line-height: 1.5;
 }
+
+/* STICKY CTA BAR */
+#sticky-cta {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  z-index: 200;
+  background: rgba(255,255,255,0.96);
+  backdrop-filter: blur(20px);
+  border-top: 1px solid var(--border);
+  padding: 14px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  transform: translateY(100%);
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 -4px 32px rgba(0,0,0,0.07);
+}
+#sticky-cta.visible {
+  transform: translateY(0);
+}
+#sticky-cta .sticky-label {
+  font-family: var(--font);
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--muted);
+  display: none;
+}
+@media(min-width:600px){
+  #sticky-cta .sticky-label { display: block; }
+}
+#sticky-cta .sticky-btn {
+  display: inline-block;
+  background: var(--accent);
+  color: #fff;
+  font-family: var(--font);
+  font-weight: 600;
+  font-size: 14.5px;
+  padding: 13px 32px;
+  border-radius: 100px;
+  text-decoration: none;
+  transition: transform 0.2s, box-shadow 0.2s;
+  white-space: nowrap;
+}
+#sticky-cta .sticky-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px rgba(62,122,63,0.28);
+}
 </style>
 </head>
 <body>
 
+<!-- STICKY CTA -->
+<div id="sticky-cta">
+  <span class="sticky-label">Ready to start making scroll-stopping ads?</span>
+  <a href="https://whop.com/infowizards/claymotion-sop/" class="sticky-btn" target="_blank" rel="noopener">Get Instant Access $37</a>
+</div>
+
 <!-- NAV -->
 <nav>
-  <span class="nav-brand" style="font-family:var(--font-heading);font-weight:800;font-size:15px;letter-spacing:-0.3px;margin-right:auto;display:none;" id="nav-brand-mobile" style="font-family:var(--font-heading);font-weight:800;font-size:15px;letter-spacing:-0.3px;margin-right:auto;">Claymotion</span>
+  <span class="nav-brand-desktop">Noctix</span>
   <ul class="nav-links">
     <li><a href="#problem">The Blind Spot</a></li>
     <li><a href="#modules">The Method</a></li>
@@ -625,9 +689,6 @@ footer { border-top: 1px solid var(--border); padding: 32px 40px; display: flex;
     <li><a href="#faq">FAQ</a></li>
     <li><a href="#buy" class="nav-cta">Get Access $37</a></li>
   </ul>
-  <button class="hamburger" id="hamburger" aria-label="Menu" onclick="toggleMobileNav()">
-    <span></span><span></span><span></span>
-  </button>
 </nav>
 <div class="mobile-nav" id="mobile-nav">
   <a href="#problem" onclick="closeMobileNav()">The Blind Spot</a>
@@ -1019,31 +1080,75 @@ const letterObs = new IntersectionObserver(entries => {
 }, { threshold: 0.4 });
 document.querySelectorAll('.module-card').forEach(card => letterObs.observe(card));
 
-// Mobile nav
+// Mobile nav (kept for safety, hamburger is hidden on mobile)
 function toggleMobileNav() {
   const nav = document.getElementById('mobile-nav');
   const btn = document.getElementById('hamburger');
-  const brand = document.getElementById('nav-brand-mobile');
-  nav.classList.toggle('open');
-  btn.classList.toggle('open');
+  if(nav) nav.classList.toggle('open');
+  if(btn) btn.classList.toggle('open');
 }
 function closeMobileNav() {
-  document.getElementById('mobile-nav').classList.remove('open');
-  document.getElementById('hamburger').classList.remove('open');
+  const nav = document.getElementById('mobile-nav');
+  const btn = document.getElementById('hamburger');
+  if(nav) nav.classList.remove('open');
+  if(btn) btn.classList.remove('open');
 }
 
-// Show brand on mobile
-function checkMobile() {
-  const brand = document.getElementById('nav-brand-mobile');
-  if (window.innerWidth <= 768) {
-    brand.style.display = 'block';
-  } else {
-    brand.style.display = 'none';
-    closeMobileNav();
+// Hide nav on scroll down, show on scroll up (desktop only)
+(function() {
+  const navEl = document.querySelector('nav');
+  let lastY = 0;
+  let ticking = false;
+
+  window.addEventListener('scroll', function() {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(function() {
+      const currentY = window.scrollY;
+      // Only apply on desktop (nav is hidden on mobile via CSS anyway)
+      if (window.innerWidth > 480) {
+        if (currentY > lastY && currentY > 80) {
+          // Scrolling down past 80px — hide nav
+          navEl.classList.add('nav-hidden');
+        } else {
+          // Scrolling up — show nav
+          navEl.classList.remove('nav-hidden');
+        }
+      }
+      lastY = currentY;
+      ticking = false;
+    });
+  }, { passive: true });
+})();
+
+// Sticky CTA: show when "The Breakthrough" section is visible, hide when above blind spot section
+(function() {
+  const stickyCta = document.getElementById('sticky-cta');
+  const breakthroughSection = document.getElementById('modules'); // The Breakthrough / The Method section
+  const blindSpotSection = document.getElementById('problem');    // The Blind Spot section
+
+  if (!stickyCta || !breakthroughSection || !blindSpotSection) return;
+
+  function updateStickyCta() {
+    const breakthroughTop = breakthroughSection.getBoundingClientRect().top;
+    const blindSpotTop = blindSpotSection.getBoundingClientRect().top;
+    const windowH = window.innerHeight;
+
+    // Show once the breakthrough section enters the viewport
+    const breakthroughVisible = breakthroughTop < windowH * 0.92;
+    // Hide again when user scrolls back up so blind spot section is fully above fold
+    const aboveBlindSpot = blindSpotTop > 0;
+
+    if (breakthroughVisible && !aboveBlindSpot) {
+      stickyCta.classList.add('visible');
+    } else {
+      stickyCta.classList.remove('visible');
+    }
   }
-}
-checkMobile();
-window.addEventListener('resize', checkMobile);
+
+  window.addEventListener('scroll', updateStickyCta, { passive: true });
+  updateStickyCta();
+})();
 </script>
 </body>
 </html>
