@@ -6,7 +6,7 @@
 <title>Claymation Ads That Stop the Scroll</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
 
 <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 <style>
@@ -61,7 +61,7 @@ h1, h2, h3, h4,
 /* NAV */
 nav {
   position: fixed;
-  top: 0; left: 0; right: 0;
+  top: 40px; left: 0; right: 0;
   z-index: 100;
   display: flex;
   align-items: center;
@@ -103,10 +103,205 @@ nav.nav-hidden {
 }
 .nav-cta:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(62,122,63,0.28); }
 .nav-brand-desktop {
-  font-family: var(--font-heading);
+  font-family: 'Playfair Display', Georgia, serif;
   font-weight: 800;
+  font-size: 24px;
+  letter-spacing: -0.5px;
+}
+
+/* ANNOUNCEMENT BAR */
+.announce-bar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 201;
+  background: #0A0A0A;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  padding: 0 24px;
+  height: 44px;
+  overflow: hidden;
+}
+.announce-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-right: 20px;
+  border-right: 1px solid rgba(255,255,255,0.12);
+  flex-shrink: 0;
+}
+.announce-badge {
+  background: var(--accent);
+  color: #fff;
+  font-family: var(--font);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  padding: 3px 10px;
+  border-radius: 100px;
+}
+.announce-price {
+  font-family: var(--font);
   font-size: 15px;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: -0.2px;
+}
+.announce-right {
+  padding-left: 20px;
+  font-family: var(--font);
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(255,255,255,0.55);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.announce-right strong {
+  font-weight: 700;
+  color: #fff;
+}
+.announce-right .announce-green {
+  color: #6fcf73;
+  font-weight: 600;
+}
+@media(max-width:640px){
+  .announce-bar { height: auto; padding: 10px 16px; flex-direction: column; gap: 4px; text-align: center; }
+  .announce-left { border-right: none; padding-right: 0; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 6px; }
+  .announce-right { padding-left: 0; justify-content: center; }
+}
+
+/* HERO IMAGE */
+.hero-image-wrap {
+  max-width: 860px;
+  margin: 24px auto 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 16px;
+}
+.hero-phone {
+  width: 28%;
+  max-width: 180px;
+  border-radius: 28px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  box-shadow: 0 24px 64px rgba(0,0,0,0.10);
+  transform: rotate(-4deg) translateY(16px);
+  background: #111;
+  aspect-ratio: 9/19.5;
+  position: relative;
+}
+.hero-phone.center {
+  transform: rotate(0deg) translateY(0);
+  width: 34%;
+  max-width: 220px;
+  box-shadow: 0 32px 80px rgba(0,0,0,0.14);
+  z-index: 2;
+}
+.hero-phone.right {
+  transform: rotate(4deg) translateY(16px);
+}
+.hero-phone-inner {
+  width: 100%; height: 100%;
+  position: absolute;
+  inset: 0;
+}
+.hero-phone-inner iframe {
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 200%;
+  height: 200%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+/* FIX EYEBROW COLOUR */
+.section-eyebrow {
+  color: var(--text) !important;
+  opacity: 0.5;
+}
+#formats .section-inner { padding-top: 72px; padding-bottom: 72px; }
+.formats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 36px; }
+@media(max-width:720px){ .formats-grid { grid-template-columns: 1fr; } }
+.format-card {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  position: relative;
+  background: #111;
+  transition: border-color 0.2s;
+}
+.format-card:hover { border-color: rgba(255,255,255,0.12); }
+.format-video-wrap {
+  position: relative;
+  width: 100%;
+  padding-bottom: 177.78%;
+  overflow: hidden;
+  background: #111;
+}
+.format-video-wrap iframe {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+}
+.format-video-wrap::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  z-index: 1;
+}
+.format-lock-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  z-index: 2;
+}
+.format-lock-icon {
+  width: 52px; height: 52px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.1);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255,255,255,0.18);
+  display: flex; align-items: center; justify-content: center;
+}
+.format-lock-label {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 20px;
+  color: #fff;
+  text-align: center;
   letter-spacing: -0.3px;
+  padding: 0 20px;
+}
+.format-lock-badge {
+  font-family: var(--font);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.45);
+  border: 1px solid rgba(255,255,255,0.14);
+  padding: 5px 14px;
+  border-radius: 100px;
+}
+.format-early-tag {
+  font-family: var(--font);
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #a8d5a9;
+  background: rgba(62,122,63,0.18);
+  border: 1px solid rgba(62,122,63,0.3);
+  padding: 5px 14px;
+  border-radius: 100px;
 }
 
 .hamburger {
@@ -132,7 +327,7 @@ nav.nav-hidden {
 .mobile-nav {
   display: none;
   position: fixed;
-  top: 64px; left: 0; right: 0;
+  top: 104px; left: 0; right: 0;
   z-index: 99;
   background: rgba(255,255,255,0.97);
   backdrop-filter: blur(20px);
@@ -172,7 +367,7 @@ nav.nav-hidden {
 /* HERO */
 .hero-wrap { border-bottom: 1px solid var(--border); }
 .hero {
-  padding: 160px 40px 120px;
+  padding: 200px 40px 40px;
   text-align: center;
   max-width: 860px;
   margin: 0 auto;
@@ -673,6 +868,19 @@ footer { border-top: 1px solid var(--border); padding: 32px 40px; display: flex;
 </head>
 <body>
 
+<!-- ANNOUNCEMENT BAR -->
+<div class="announce-bar">
+  <div class="announce-left">
+    <span class="announce-badge">Early Bird</span>
+    <span class="announce-price">$37</span>
+  </div>
+  <div class="announce-right">
+    <strong>First 10 people only.</strong>
+    <span class="announce-green">+ Lego, CGI &amp; Stop Felt Motion formats included.</span>
+    Claim yours before it's gone.
+  </div>
+</div>
+
 <!-- STICKY CTA -->
 <div id="sticky-cta">
   <span class="sticky-label">Ready to start making scroll-stopping ads?</span>
@@ -683,7 +891,8 @@ footer { border-top: 1px solid var(--border); padding: 32px 40px; display: flex;
 <nav>
   <span class="nav-brand-desktop">Noctix</span>
   <ul class="nav-links">
-    <li><a href="#problem">The Blind Spot</a></li>
+    <li><a href="#problem">Transform</a></li>
+    <li><a href="#formats">Coming Formats</a></li>
     <li><a href="#modules">The Method</a></li>
     <li><a href="#testimonials">Reviews</a></li>
     <li><a href="#faq">FAQ</a></li>
@@ -691,7 +900,8 @@ footer { border-top: 1px solid var(--border); padding: 32px 40px; display: flex;
   </ul>
 </nav>
 <div class="mobile-nav" id="mobile-nav">
-  <a href="#problem" onclick="closeMobileNav()">The Blind Spot</a>
+  <a href="#problem" onclick="closeMobileNav()">Transform</a>
+  <a href="#formats" onclick="closeMobileNav()">Coming Formats</a>
   <a href="#modules" onclick="closeMobileNav()">The Method</a>
   <a href="#testimonials" onclick="closeMobileNav()">Reviews</a>
   <a href="#faq" onclick="closeMobileNav()">FAQ</a>
@@ -701,8 +911,8 @@ footer { border-top: 1px solid var(--border); padding: 32px 40px; display: flex;
 <!-- HERO -->
 <div class="hero-wrap">
   <div class="hero">
-    <h1 class="r d1">Make claymation ads that <em>stop the scroll.</em></h1>
-    <p class="hero-sub r d2">The step-by-step system to create scroll-stopping claymation video ads using AI tools, for any product, from your laptop.</p>
+    <h1 class="r d1">Your next ad could be<br><em>made by tomorrow.</em></h1>
+    <p class="hero-sub r d2">A step-by-step system that turns any idea into a professional claymation video ad using AI, from your laptop, for about $2.</p>
     <div class="hero-actions r d3">
       <a href="https://whop.com/infowizards/claymotion-sop/" class="btn-primary" target="_blank" rel="noopener">Get Instant Access $37</a>
       <a href="#modules" class="btn-ghost">See what's inside ↓</a>
@@ -712,48 +922,66 @@ footer { border-top: 1px solid var(--border); padding: 32px 40px; display: flex;
       One-time payment · Instant digital delivery
     </p>
   </div>
+  <!-- HERO PHONE MOCKUPS -->
+  <div class="hero-image-wrap r d4">
+    <div class="hero-phone">
+      <div class="hero-phone-inner">
+        <iframe src="https://player.vimeo.com/video/1186646051?badge=0&autopause=0&player_id=0&app_id=58479&autoplay=1&muted=1&loop=1&background=1" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" title="HeroAd1"></iframe>
+      </div>
+    </div>
+    <div class="hero-phone center">
+      <div class="hero-phone-inner">
+        <iframe src="https://player.vimeo.com/video/1186645835?badge=0&autopause=0&player_id=0&app_id=58479&autoplay=1&muted=1&loop=1&background=1" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" title="HeroAd2"></iframe>
+      </div>
+    </div>
+    <div class="hero-phone right">
+      <div class="hero-phone-inner">
+        <iframe src="https://player.vimeo.com/video/1186646387?badge=0&autopause=0&player_id=0&app_id=58479&autoplay=1&muted=1&loop=1&background=1" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" title="HeroAd3"></iframe>
+      </div>
+    </div>
+  </div>
 </div>
 
-<!-- PROBLEM -->
+<!-- TRANSFORM -->
 <section id="problem">
   <div class="section-inner">
     <div class="r">
-      <span class="section-eyebrow">The Blind Spot</span>
-      <h2 class="section-title">Why Your Ads Are Invisible<br>(Even Though You're Posting)</h2>
-      <p class="section-sub">The feed has changed. UGC is saturated, stock footage is forgettable, and faceless content blends in. Here's what's actually costing you reach.</p>
+      <span class="section-eyebrow">Transform Your Creative Output</span>
+      <h2 class="section-title">One system. Scroll-stopping<br>ads. Made by you.</h2>
+      <p class="section-sub">Over 75 AI-powered steps connected in sequence so your ideas go from brief to finished video without a team, a budget, or a design background.</p>
     </div>
     <div class="problem-list r">
       <div class="problem-item">
         <div class="p-left">
           <div class="p-icon">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
           </div>
-          <div class="p-title">Your content is getting scrolled past in 0.5 seconds</div>
+          <div class="p-title">Your ideas stop sitting in drafts</div>
         </div>
         <div class="p-right">
-          <p>If your ad looks like every other ad in the feed, it gets treated like every other ad. Ignored. The scroll doesn't stop for familiar. It stops for unexpected.</p>
+          <p>You've had the concept. The hook. The vision. Now you have a system that moves it from idea to finished video no team, no back-and-forth, no waiting. Just you and a workflow that delivers every time.</p>
         </div>
       </div>
       <div class="problem-item">
         <div class="p-left">
           <div class="p-icon">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
           </div>
-          <div class="p-title">Professional-looking ads feel financially out of reach</div>
+          <div class="p-title">Your content starts looking like it cost thousands</div>
         </div>
         <div class="p-right">
-          <p>Hiring a motion designer costs $300 to $1,000+ per video. Most brands and creators skip video ads entirely because the production barrier is too high. It doesn't have to be that way.</p>
+          <p>Claymation breaks the feed pattern. It's unexpected, textured, and impossible to scroll past. The kind of ad people screenshot and share and now it's something you can produce in an afternoon, for about $2.</p>
         </div>
       </div>
       <div class="problem-item">
         <div class="p-left">
           <div class="p-icon">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
           </div>
-          <div class="p-title">AI tools exist but nobody explains how to connect them</div>
+          <div class="p-title">You go from experimenting to executing</div>
         </div>
         <div class="p-right">
-          <p>Claude, Fal.ai, Kling, ElevenLabs: every tool has its own learning curve. Without a system that connects them in sequence, you spend hours experimenting and still get mediocre results.</p>
+          <p>Claude, Kling, Fal.ai, ElevenLabs connected in sequence, in the right order, with the exact prompts. One repeatable workflow. Whether you're inspired or not, the system runs. The results compound.</p>
         </div>
       </div>
     </div>
@@ -875,6 +1103,65 @@ footer { border-top: 1px solid var(--border); padding: 32px 40px; display: flex;
           <div class="video-label-sub">Makes people feel something before they buy</div>
         </div>
       </div>
+    </div>
+  </div>
+</section>
+
+<!-- COMING FORMATS -->
+<section id="formats">
+  <div class="section-inner">
+    <div class="r">
+      <span class="section-eyebrow">What's Coming</span>
+      <h2 class="section-title">Claymation is just<br>the beginning.</h2>
+      <p class="section-sub">Every format below drops as its own standalone system. Buy today and you get early access to all three the moment they're live.</p>
+    </div>
+    <div class="formats-grid r">
+
+      <!-- CGI -->
+      <div class="format-card">
+        <div class="format-video-wrap">
+          <iframe src="https://player.vimeo.com/video/1186643642?badge=0&autopause=0&player_id=0&app_id=58479&autoplay=1&muted=1&loop=1&background=1" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;" title="CGIFormat"></iframe>
+          <div class="format-lock-overlay">
+            <div class="format-lock-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            </div>
+            <div class="format-lock-label">CGI Ads</div>
+            <div class="format-lock-badge">Coming Soon</div>
+            <div class="format-early-tag">Included with early access</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- STOP FELT MOTION -->
+      <div class="format-card">
+        <div class="format-video-wrap">
+          <iframe src="https://player.vimeo.com/video/1186646666?badge=0&autopause=0&player_id=0&app_id=58479&autoplay=1&muted=1&loop=1&background=1" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;" title="FeltFormat"></iframe>
+          <div class="format-lock-overlay">
+            <div class="format-lock-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            </div>
+            <div class="format-lock-label">Stop Felt Motion</div>
+            <div class="format-lock-badge">Coming Soon</div>
+            <div class="format-early-tag">Included with early access</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- LEGO -->
+      <div class="format-card">
+        <div class="format-video-wrap">
+          <iframe src="https://player.vimeo.com/video/1186643965?badge=0&autopause=0&player_id=0&app_id=58479&autoplay=1&muted=1&loop=1&background=1" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;" title="LegoFormat"></iframe>
+          <div class="format-lock-overlay">
+            <div class="format-lock-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            </div>
+            <div class="format-lock-label">Lego-Style Ads</div>
+            <div class="format-lock-badge">Coming Soon</div>
+            <div class="format-early-tag">Included with early access</div>
+          </div>
+        </div>
+      </div>
+
     </div>
   </div>
 </section>
@@ -1108,10 +1395,10 @@ function closeMobileNav() {
       // Only apply on desktop (nav is hidden on mobile via CSS anyway)
       if (window.innerWidth > 480) {
         if (currentY > lastY && currentY > 80) {
-          // Scrolling down past 80px — hide nav
+          // Scrolling down past 80px hide nav
           navEl.classList.add('nav-hidden');
         } else {
-          // Scrolling up — show nav
+          // Scrolling up show nav
           navEl.classList.remove('nav-hidden');
         }
       }
