@@ -122,6 +122,10 @@ nav.nav-hidden {
   padding: 0 24px;
   height: 44px;
   overflow: hidden;
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.announce-bar.bar-hidden {
+  transform: translateY(-100%);
 }
 .announce-left {
   display: flex;
@@ -167,11 +171,41 @@ nav.nav-hidden {
   color: #6fcf73;
   font-weight: 600;
 }
+
+/* ── MOBILE: clean single-line announce bar ── */
 @media(max-width:640px){
-  .announce-bar { height: auto; padding: 10px 16px; flex-direction: column; gap: 4px; text-align: center; }
-  .announce-left { border-right: none; padding-right: 0; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 6px; }
-  .announce-right { padding-left: 0; justify-content: center; }
+  .announce-bar {
+    height: 40px;
+    padding: 0 16px;
+    flex-direction: row;
+    gap: 8px;
+    justify-content: center;
+  }
+  .announce-left {
+    border-right: none;
+    padding-right: 0;
+    padding-bottom: 0;
+    gap: 6px;
+  }
+  .announce-badge { font-size: 9px; padding: 3px 8px; }
+  .announce-price { font-size: 13px; }
+  .announce-right {
+    padding-left: 8px;
+    font-size: 12px;
+    gap: 0;
+    flex-wrap: nowrap;
+  }
+  /* hide secondary desktop copy on mobile */
+  .announce-right strong,
+  .announce-right .announce-green { display: none; }
+  /* inject mobile-only text via ::after */
+  .announce-right::after {
+    content: 'Only 10 spots · Price rising';
+    color: rgba(255,255,255,0.6);
+    white-space: nowrap;
+  }
 }
+
 
 /* HERO IMAGE */
 .hero-image-wrap {
@@ -181,6 +215,7 @@ nav.nav-hidden {
   align-items: flex-end;
   justify-content: center;
   gap: 16px;
+  padding-bottom: 56px; /* contain translateY(16px) + box-shadow bleed */
 }
 .hero-phone {
   width: 28%;
@@ -864,6 +899,12 @@ footer { border-top: 1px solid var(--border); padding: 32px 40px; display: flex;
   transform: translateY(-2px);
   box-shadow: 0 12px 32px rgba(62,122,63,0.28);
 }
+.sticky-btn-mobile { display: none; }
+.sticky-btn-desktop { display: inline; }
+@media(max-width:640px){
+  .sticky-btn-mobile { display: inline; }
+  .sticky-btn-desktop { display: none; }
+}
 </style>
 </head>
 <body>
@@ -884,7 +925,10 @@ footer { border-top: 1px solid var(--border); padding: 32px 40px; display: flex;
 <!-- STICKY CTA -->
 <div id="sticky-cta">
   <span class="sticky-label">Ready to start making scroll-stopping ads?</span>
-  <a href="https://whop.com/infowizards/claymotion-sop/" class="sticky-btn" target="_blank" rel="noopener">Get Instant Access $37</a>
+  <a href="https://whop.com/infowizards/claymotion-sop/" class="sticky-btn" target="_blank" rel="noopener">
+    <span class="sticky-btn-desktop">Get Instant Access $37</span>
+    <span class="sticky-btn-mobile">Save 21% — Get it for $37</span>
+  </a>
 </div>
 
 <!-- NAV -->
@@ -926,17 +970,17 @@ footer { border-top: 1px solid var(--border); padding: 32px 40px; display: flex;
   <div class="hero-image-wrap r d4">
     <div class="hero-phone">
       <div class="hero-phone-inner">
-        <iframe src="https://player.vimeo.com/video/1186646051?badge=0&autopause=0&player_id=0&app_id=58479&autoplay=1&muted=1&loop=1&background=1" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" title="HeroAd1"></iframe>
+        <iframe src="https://player.vimeo.com/video/1186646051?badge=0&autopause=0&player_id=0&app_id=58479&autoplay=1&muted=1&loop=1&background=1" frameborder="0" allow="autoplay; fullscreen; picture-in-picture; clipboard-write" loading="eager" title="HeroAd1"></iframe>
       </div>
     </div>
     <div class="hero-phone center">
       <div class="hero-phone-inner">
-        <iframe src="https://player.vimeo.com/video/1186645835?badge=0&autopause=0&player_id=0&app_id=58479&autoplay=1&muted=1&loop=1&background=1" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" title="HeroAd2"></iframe>
+        <iframe src="https://player.vimeo.com/video/1186645835?badge=0&autopause=0&player_id=0&app_id=58479&autoplay=1&muted=1&loop=1&background=1" frameborder="0" allow="autoplay; fullscreen; picture-in-picture; clipboard-write" loading="eager" title="HeroAd2"></iframe>
       </div>
     </div>
     <div class="hero-phone right">
       <div class="hero-phone-inner">
-        <iframe src="https://player.vimeo.com/video/1186646387?badge=0&autopause=0&player_id=0&app_id=58479&autoplay=1&muted=1&loop=1&background=1" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" title="HeroAd3"></iframe>
+        <iframe src="https://player.vimeo.com/video/1186646387?badge=0&autopause=0&player_id=0&app_id=58479&autoplay=1&muted=1&loop=1&background=1" frameborder="0" allow="autoplay; fullscreen; picture-in-picture; clipboard-write" loading="eager" title="HeroAd3"></iframe>
       </div>
     </div>
   </div>
@@ -1349,11 +1393,28 @@ function toggle(btn) {
   if (!isOpen) item.classList.add('open');
 }
 
-// Reveal on scroll
+// Reveal on scroll — elements already in viewport on load get 'in' immediately
 const obs = new IntersectionObserver(entries => {
   entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('in'); });
 }, { threshold: 0.08 });
 document.querySelectorAll('.r').forEach(el => obs.observe(el));
+
+// Instant above-fold reveal: fire on DOMContentLoaded so hero elements don't wait
+(function immediateReveal() {
+  const revealAll = () => {
+    document.querySelectorAll('.r').forEach(el => {
+      const rect = el.getBoundingClientRect();
+      if (rect.top < window.innerHeight) el.classList.add('in');
+    });
+  };
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', revealAll);
+  } else {
+    revealAll();
+  }
+  // Also fire after a short tick in case of late layout
+  setTimeout(revealAll, 80);
+})();
 
 // Letter highlight on scroll
 const letterObs = new IntersectionObserver(entries => {
@@ -1395,10 +1456,8 @@ function closeMobileNav() {
       // Only apply on desktop (nav is hidden on mobile via CSS anyway)
       if (window.innerWidth > 480) {
         if (currentY > lastY && currentY > 80) {
-          // Scrolling down past 80px hide nav
           navEl.classList.add('nav-hidden');
         } else {
-          // Scrolling up show nav
           navEl.classList.remove('nav-hidden');
         }
       }
@@ -1408,11 +1467,26 @@ function closeMobileNav() {
   }, { passive: true });
 })();
 
+// MOBILE ONLY: Hide announcement bar after user scrolls past it
+(function() {
+  const bar = document.querySelector('.announce-bar');
+  if (!bar) return;
+  let announced = false;
+  window.addEventListener('scroll', function() {
+    if (window.innerWidth > 640) return; // desktop: keep bar always visible
+    if (window.scrollY > bar.offsetHeight + 10) {
+      bar.classList.add('bar-hidden');
+    } else {
+      bar.classList.remove('bar-hidden');
+    }
+  }, { passive: true });
+})();
+
 // Sticky CTA: show when "The Breakthrough" section is visible, hide when above blind spot section
 (function() {
   const stickyCta = document.getElementById('sticky-cta');
-  const breakthroughSection = document.getElementById('modules'); // The Breakthrough / The Method section
-  const blindSpotSection = document.getElementById('problem');    // The Blind Spot section
+  const breakthroughSection = document.getElementById('modules');
+  const blindSpotSection = document.getElementById('problem');
 
   if (!stickyCta || !breakthroughSection || !blindSpotSection) return;
 
@@ -1421,9 +1495,7 @@ function closeMobileNav() {
     const blindSpotTop = blindSpotSection.getBoundingClientRect().top;
     const windowH = window.innerHeight;
 
-    // Show once the breakthrough section enters the viewport
     const breakthroughVisible = breakthroughTop < windowH * 0.92;
-    // Hide again when user scrolls back up so blind spot section is fully above fold
     const aboveBlindSpot = blindSpotTop > 0;
 
     if (breakthroughVisible && !aboveBlindSpot) {
