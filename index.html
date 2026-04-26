@@ -7,6 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+<script src="https://player.vimeo.com/api/player.js" async></script>
 
 <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 <style>
@@ -249,11 +250,12 @@ nav.nav-hidden {
 }
 .hero-phone-inner iframe {
   position: absolute;
-  top: 50%; left: 50%;
-  width: 200%;
-  height: 200%;
-  transform: translate(-50%, -50%);
+  top: -10%;
+  left: -10%;
+  width: 120%;
+  height: 120%;
   pointer-events: none;
+  border: none;
 }
 
 /* ── MOBILE CAROUSEL (Option A — swipe-snap) ── */
@@ -479,8 +481,8 @@ nav.nav-hidden {
   max-width: 860px;
   margin: 0 auto;
 }
-@media(max-width:640px){ .hero { padding: 110px 20px 80px; } }
-@media(max-width:480px){ .hero { padding: 110px 20px 80px; } }
+@media(max-width:640px){ .hero { padding: 145px 20px 80px; } }
+@media(max-width:480px){ .hero { padding: 145px 20px 80px; } }
 
 .hero h1 {
   font-family: var(--font-heading);
@@ -1285,7 +1287,7 @@ footer { border-top: 1px solid var(--border); padding: 32px 40px; display: flex;
       <!-- LEGO -->
       <div class="format-card">
         <div class="format-video-wrap">
-          <iframe src="https://player.vimeo.com/video/1186656634?badge=0&autopause=0&player_id=0&app_id=58479&autoplay=1&muted=1&loop=1&background=1" frameborder="0" allow="autoplay; fullscreen; picture-in-picture; clipboard-write" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;" title="LegoFormat"></iframe>
+          <iframe src="https://player.vimeo.com/video/1186658405?badge=0&autopause=0&player_id=0&app_id=58479&autoplay=1&muted=1&loop=1&background=1" frameborder="0" allow="autoplay; fullscreen; picture-in-picture; clipboard-write" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;" title="LegoFormat"></iframe>
           <div class="format-lock-overlay">
             <div class="format-lock-icon">
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
@@ -1475,7 +1477,6 @@ footer { border-top: 1px solid var(--border); padding: 32px 40px; display: flex;
   <p class="footer-note">© 2025 Claymotion · All rights reserved</p>
 </footer>
 
-<script src="https://player.vimeo.com/api/player.js"></script>
 <script>
 function toggle(btn) {
   const item = btn.closest('.faq-item');
@@ -1558,57 +1559,105 @@ function closeMobileNav() {
   }, { passive: true });
 })();
 
-// Force-play ALL background Vimeo iframes via Player API
-// Covers: hero phone mockups + coming soon format cards
-// Mobile browsers block iframe autoplay — Player.js overrides this reliably
+// ═══════════════════════════════════════════════════════
+// BULLETPROOF VIMEO BACKGROUND VIDEO INIT
+// Fixes: race conditions, duplicate instances, mobile Safari
+// blank screens, tab-switch pausing, slow connection timing
+// ═══════════════════════════════════════════════════════
 (function() {
-  var SELECTORS = [
+  // Registry to prevent duplicate Player instances (Bug D fix)
+  var playerRegistry = new WeakMap();
+
+  var BG_SELECTORS = [
     '.hero-phone-inner iframe',
     '.format-video-wrap iframe'
   ];
 
-  function initAllVideos() {
-    if (typeof Vimeo === 'undefined') return;
-    SELECTORS.forEach(function(sel) {
-      document.querySelectorAll(sel).forEach(function(iframe) {
-        try {
-          // Assign a unique id so Player.js can reference it
-          if (!iframe.id) iframe.id = 'vimeo-bg-' + Math.random().toString(36).slice(2, 7);
-          var player = new Vimeo.Player(iframe);
-          player.setVolume(0);
-          player.setLoop(true);
-          player.play().catch(function() {}); // silently ignore policy blocks
-        } catch(e) {}
-      });
-    });
-  }
+  function attachPlayer(iframe) {
+    // Skip if already registered (Bug D: no duplicate instances)
+    if (playerRegistry.has(iframe)) {
+      var existing = playerRegistry.get(iframe);
+      // Just re-trigger play in case it paused (Bug E: tab switch)
+      try { existing.play().catch(function(){}); } catch(e) {}
+      return;
+    }
 
-  function waitForVimeoThenInit(attempt) {
-    attempt = attempt || 0;
-    if (typeof Vimeo !== 'undefined') {
-      initAllVideos();
-    } else if (attempt < 20) {
-      // Retry every 250ms for up to 5 seconds
-      setTimeout(function() { waitForVimeoThenInit(attempt + 1); }, 250);
+    // Wait for iframe to be loaded before attaching (Bug B fix)
+    function doAttach() {
+      try {
+        var p = new Vimeo.Player(iframe);
+        playerRegistry.set(iframe, p);
+        p.setVolume(0);
+        p.setLoop(true);
+        p.play().catch(function() {});
+        // Re-play on any pause event (handles mobile OS interruptions)
+        p.on('pause', function() {
+          setTimeout(function() {
+            try { p.play().catch(function(){}); } catch(e) {}
+          }, 300);
+        });
+      } catch(e) {}
+    }
+
+    // If iframe is already loaded, attach immediately; otherwise wait
+    if (iframe.contentDocument && iframe.contentDocument.readyState === 'complete') {
+      doAttach();
+    } else {
+      iframe.addEventListener('load', doAttach, { once: true });
+      // Fallback: attach after 1.5s regardless (some mobile browsers suppress load event)
+      setTimeout(function() {
+        if (!playerRegistry.has(iframe)) doAttach();
+      }, 1500);
     }
   }
 
-  // Kick off as early as possible
-  waitForVimeoThenInit();
-
-  // Also hook into script load event for the Vimeo player.js tag
-  var vimeoScript = document.querySelector('script[src*="vimeo.com/api/player.js"]');
-  if (vimeoScript) {
-    vimeoScript.addEventListener('load', function() {
-      initAllVideos();
-      setTimeout(initAllVideos, 600); // second pass for slow mobile
+  function initAllBgVideos() {
+    if (typeof Vimeo === 'undefined') return false;
+    BG_SELECTORS.forEach(function(sel) {
+      document.querySelectorAll(sel).forEach(attachPlayer);
     });
+    return true;
   }
 
-  // Final safety net on window load
+  // Poll until Vimeo SDK is ready — no retry limit on mobile (Bug A fix)
+  var pollInterval = null;
+  function startPolling() {
+    if (pollInterval) return; // don't double-poll
+    pollInterval = setInterval(function() {
+      if (initAllBgVideos()) {
+        clearInterval(pollInterval);
+        pollInterval = null;
+      }
+    }, 150);
+    // Stop polling after 15 seconds max (safety exit)
+    setTimeout(function() {
+      if (pollInterval) { clearInterval(pollInterval); pollInterval = null; }
+    }, 15000);
+  }
+
+  // Start polling immediately
+  startPolling();
+
+  // Also trigger on window load in case polling stopped too early
   window.addEventListener('load', function() {
-    initAllVideos();
-    setTimeout(initAllVideos, 1000);
+    initAllBgVideos();
+    setTimeout(initAllBgVideos, 800);
+    setTimeout(initAllBgVideos, 2500);
+  });
+
+  // Bug E fix: re-play all videos when user returns to tab
+  document.addEventListener('visibilitychange', function() {
+    if (document.visibilityState === 'visible') {
+      setTimeout(initAllBgVideos, 200);
+    }
+  });
+
+  // Bug E fix: re-play when page regains focus on iOS (Safari uses pageshow not visibilitychange)
+  window.addEventListener('pageshow', function(e) {
+    if (e.persisted) {
+      // Page restored from bfcache — re-init everything
+      setTimeout(initAllBgVideos, 300);
+    }
   });
 })();
 (function() {
