@@ -479,8 +479,8 @@ nav.nav-hidden {
   max-width: 860px;
   margin: 0 auto;
 }
-@media(max-width:640px){ .hero { padding: 68px 20px 80px; } }
-@media(max-width:480px){ .hero { padding: 68px 20px 80px; } }
+@media(max-width:640px){ .hero { padding: 110px 20px 80px; } }
+@media(max-width:480px){ .hero { padding: 110px 20px 80px; } }
 
 .hero h1 {
   font-family: var(--font-heading);
@@ -1255,7 +1255,7 @@ footer { border-top: 1px solid var(--border); padding: 32px 40px; display: flex;
       <!-- CGI -->
       <div class="format-card">
         <div class="format-video-wrap">
-          <iframe src="https://player.vimeo.com/video/1186643642?badge=0&autopause=0&player_id=0&app_id=58479&autoplay=1&muted=1&loop=1&background=1" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;" title="CGIFormat"></iframe>
+          <iframe src="https://player.vimeo.com/video/1186643642?badge=0&autopause=0&player_id=0&app_id=58479&autoplay=1&muted=1&loop=1&background=1" frameborder="0" allow="autoplay; fullscreen; picture-in-picture; clipboard-write" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;" title="CGIFormat"></iframe>
           <div class="format-lock-overlay">
             <div class="format-lock-icon">
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
@@ -1270,7 +1270,7 @@ footer { border-top: 1px solid var(--border); padding: 32px 40px; display: flex;
       <!-- STOP FELT MOTION -->
       <div class="format-card">
         <div class="format-video-wrap">
-          <iframe src="https://player.vimeo.com/video/1186646666?badge=0&autopause=0&player_id=0&app_id=58479&autoplay=1&muted=1&loop=1&background=1" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;" title="FeltFormat"></iframe>
+          <iframe src="https://player.vimeo.com/video/1186646666?badge=0&autopause=0&player_id=0&app_id=58479&autoplay=1&muted=1&loop=1&background=1" frameborder="0" allow="autoplay; fullscreen; picture-in-picture; clipboard-write" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;" title="FeltFormat"></iframe>
           <div class="format-lock-overlay">
             <div class="format-lock-icon">
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
@@ -1285,7 +1285,7 @@ footer { border-top: 1px solid var(--border); padding: 32px 40px; display: flex;
       <!-- LEGO -->
       <div class="format-card">
         <div class="format-video-wrap">
-          <iframe src="https://player.vimeo.com/video/1186643965?badge=0&autopause=0&player_id=0&app_id=58479&autoplay=1&muted=1&loop=1&background=1" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;" title="LegoFormat"></iframe>
+          <iframe src="https://player.vimeo.com/video/1186656634?badge=0&autopause=0&player_id=0&app_id=58479&autoplay=1&muted=1&loop=1&background=1" frameborder="0" allow="autoplay; fullscreen; picture-in-picture; clipboard-write" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;" title="LegoFormat"></iframe>
           <div class="format-lock-overlay">
             <div class="format-lock-icon">
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
@@ -1558,29 +1558,57 @@ function closeMobileNav() {
   }, { passive: true });
 })();
 
-// Force-play all hero phone videos using Vimeo Player API (fixes mobile black screen)
-// Off-screen iframes don't autoplay on mobile browsers — Player.js overrides this
+// Force-play ALL background Vimeo iframes via Player API
+// Covers: hero phone mockups + coming soon format cards
+// Mobile browsers block iframe autoplay — Player.js overrides this reliably
 (function() {
-  function initHeroVideos() {
+  var SELECTORS = [
+    '.hero-phone-inner iframe',
+    '.format-video-wrap iframe'
+  ];
+
+  function initAllVideos() {
     if (typeof Vimeo === 'undefined') return;
-    document.querySelectorAll('.hero-phone-inner iframe').forEach(function(iframe) {
-      try {
-        var player = new Vimeo.Player(iframe);
-        player.setVolume(0);
-        player.setLoop(true);
-        player.play().catch(function() {}); // silently fail if still blocked
-      } catch(e) {}
+    SELECTORS.forEach(function(sel) {
+      document.querySelectorAll(sel).forEach(function(iframe) {
+        try {
+          // Assign a unique id so Player.js can reference it
+          if (!iframe.id) iframe.id = 'vimeo-bg-' + Math.random().toString(36).slice(2, 7);
+          var player = new Vimeo.Player(iframe);
+          player.setVolume(0);
+          player.setLoop(true);
+          player.play().catch(function() {}); // silently ignore policy blocks
+        } catch(e) {}
+      });
     });
   }
-  // Fire immediately if script is already ready, otherwise wait
-  if (typeof Vimeo !== 'undefined') {
-    initHeroVideos();
+
+  function waitForVimeoThenInit(attempt) {
+    attempt = attempt || 0;
+    if (typeof Vimeo !== 'undefined') {
+      initAllVideos();
+    } else if (attempt < 20) {
+      // Retry every 250ms for up to 5 seconds
+      setTimeout(function() { waitForVimeoThenInit(attempt + 1); }, 250);
+    }
   }
-  // Also fire on load (catches deferred Vimeo script init)
+
+  // Kick off as early as possible
+  waitForVimeoThenInit();
+
+  // Also hook into script load event for the Vimeo player.js tag
+  var vimeoScript = document.querySelector('script[src*="vimeo.com/api/player.js"]');
+  if (vimeoScript) {
+    vimeoScript.addEventListener('load', function() {
+      initAllVideos();
+      setTimeout(initAllVideos, 600); // second pass for slow mobile
+    });
+  }
+
+  // Final safety net on window load
   window.addEventListener('load', function() {
-    initHeroVideos();
-    // Second attempt after a short delay for slow connections
-    setTimeout(initHeroVideos, 800);
+    initAllVideos();
+    setTimeout(initAllVideos, 1000);
   });
 })();
 (function() {
