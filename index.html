@@ -114,7 +114,7 @@ nav.nav-hidden {
   position: fixed;
   top: 0; left: 0; right: 0;
   z-index: 201;
-  background: #0A0A0A;
+  background: #6B793E;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -172,38 +172,41 @@ nav.nav-hidden {
   font-weight: 600;
 }
 
-/* ── MOBILE: clean single-line announce bar ── */
+/* ── MOBILE: 2-line centered announce bar ── */
 @media(max-width:640px){
   .announce-bar {
-    height: 40px;
-    padding: 0 16px;
-    flex-direction: row;
-    gap: 8px;
+    height: auto;
+    padding: 9px 16px 10px;
+    flex-direction: column;
+    align-items: center;
     justify-content: center;
+    gap: 2px;
+    text-align: center;
   }
-  .announce-left {
-    border-right: none;
-    padding-right: 0;
-    padding-bottom: 0;
-    gap: 6px;
+  /* hide desktop layout pieces on mobile */
+  .announce-left,
+  .announce-right { display: none; }
+  /* show mobile-only 2-line block */
+  .announce-mob { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+  .announce-mob-top {
+    font-family: var(--font);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    color: rgba(255,255,255,0.75);
+    text-transform: uppercase;
   }
-  .announce-badge { font-size: 9px; padding: 3px 8px; }
-  .announce-price { font-size: 13px; }
-  .announce-right {
-    padding-left: 8px;
-    font-size: 12px;
-    gap: 0;
-    flex-wrap: nowrap;
-  }
-  /* hide secondary desktop copy on mobile */
-  .announce-right strong,
-  .announce-right .announce-green { display: none; }
-  /* inject mobile-only text via ::after */
-  .announce-right::after {
-    content: 'Only 10 spots · Price rising';
-    color: rgba(255,255,255,0.6);
+  .announce-mob-bottom {
+    font-family: var(--font);
+    font-size: 13px;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: -0.2px;
     white-space: nowrap;
   }
+}
+@media(min-width:641px){
+  .announce-mob { display: none; }
 }
 
 
@@ -251,6 +254,75 @@ nav.nav-hidden {
   height: 200%;
   transform: translate(-50%, -50%);
   pointer-events: none;
+}
+
+/* ── MOBILE CAROUSEL (Option A — swipe-snap) ── */
+.hero-carousel-dots { display: none; } /* hidden on desktop */
+
+@media(max-width:640px){
+  /* convert wrap to full-bleed horizontal scroll container */
+  .hero-image-wrap {
+    max-width: 100%;
+    width: 100%;
+    margin: 20px 0 0;
+    padding: 0 0 20px; /* bottom space for dots */
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+    overflow-x: scroll;
+    scroll-snap-type: x mandatory;
+    scroll-padding: 0 12%;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .hero-image-wrap::-webkit-scrollbar { display: none; }
+  /* first spacer so first card can snap to center */
+  .hero-image-wrap::before,
+  .hero-image-wrap::after {
+    content: '';
+    flex: 0 0 12%;
+    display: block;
+  }
+  /* all phones become equal carousel slides */
+  .hero-phone,
+  .hero-phone.center,
+  .hero-phone.right {
+    flex: 0 0 68%;
+    width: 68%;
+    max-width: none;
+    transform: none !important;
+    scroll-snap-align: center;
+    scroll-snap-stop: always;
+    opacity: 0.5;
+    transition: opacity 0.25s ease, transform 0.25s ease;
+    box-shadow: 0 16px 40px rgba(0,0,0,0.12);
+    border-radius: 24px;
+    z-index: auto;
+  }
+  .hero-phone.carousel-active {
+    opacity: 1;
+    box-shadow: 0 24px 60px rgba(0,0,0,0.18);
+  }
+  /* dot indicator strip */
+  .hero-carousel-dots {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+    padding: 14px 0 8px;
+  }
+  .hero-carousel-dots .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 3px;
+    background: rgba(0,0,0,0.15);
+    transition: width 0.25s ease, background 0.25s ease;
+  }
+  .hero-carousel-dots .dot.active {
+    width: 20px;
+    background: var(--accent);
+  }
 }
 
 /* FIX EYEBROW COLOUR */
@@ -417,6 +489,12 @@ nav.nav-hidden {
   letter-spacing: -1.5px;
   margin-bottom: 24px;
   color: var(--text);
+}
+@media(max-width:480px){
+  .hero h1 {
+    font-size: 32px;
+    letter-spacing: -1px;
+  }
 }
 .hero h1 em {
   font-style: normal;
@@ -911,6 +989,7 @@ footer { border-top: 1px solid var(--border); padding: 32px 40px; display: flex;
 
 <!-- ANNOUNCEMENT BAR -->
 <div class="announce-bar">
+  <!-- Desktop -->
   <div class="announce-left">
     <span class="announce-badge">Early Bird</span>
     <span class="announce-price">$37</span>
@@ -919,6 +998,11 @@ footer { border-top: 1px solid var(--border); padding: 32px 40px; display: flex;
     <strong>First 10 people only.</strong>
     <span class="announce-green">+ Lego, CGI &amp; Stop Felt Motion formats included.</span>
     Claim yours before it's gone.
+  </div>
+  <!-- Mobile: 2-line centered -->
+  <div class="announce-mob">
+    <div class="announce-mob-top">🔥 Early Bird · Save 21%</div>
+    <div class="announce-mob-bottom">Only 10 spots left — price rises to $47</div>
   </div>
 </div>
 
@@ -983,6 +1067,12 @@ footer { border-top: 1px solid var(--border); padding: 32px 40px; display: flex;
         <iframe src="https://player.vimeo.com/video/1186646387?badge=0&autopause=0&player_id=0&app_id=58479&autoplay=1&muted=1&loop=1&background=1" frameborder="0" allow="autoplay; fullscreen; picture-in-picture; clipboard-write" loading="eager" title="HeroAd3"></iframe>
       </div>
     </div>
+  </div>
+  <!-- Mobile carousel dot indicators -->
+  <div class="hero-carousel-dots" aria-hidden="true">
+    <span class="dot active"></span>
+    <span class="dot"></span>
+    <span class="dot"></span>
   </div>
 </div>
 
@@ -1507,6 +1597,46 @@ function closeMobileNav() {
 
   window.addEventListener('scroll', updateStickyCta, { passive: true });
   updateStickyCta();
+})();
+
+// MOBILE CAROUSEL: active dot + opacity update on scroll
+(function() {
+  const wrap = document.querySelector('.hero-image-wrap');
+  const dots = document.querySelectorAll('.hero-carousel-dots .dot');
+  const phones = wrap ? Array.from(wrap.querySelectorAll('.hero-phone')) : [];
+  if (!wrap || !phones.length) return;
+
+  function getActiveIndex() {
+    const wrapCenter = wrap.scrollLeft + wrap.offsetWidth / 2;
+    let closest = 0, minDist = Infinity;
+    phones.forEach((phone, i) => {
+      const phoneCenter = phone.offsetLeft + phone.offsetWidth / 2;
+      const dist = Math.abs(phoneCenter - wrapCenter);
+      if (dist < minDist) { minDist = dist; closest = i; }
+    });
+    return closest;
+  }
+
+  function update() {
+    if (window.innerWidth > 640) return;
+    const active = getActiveIndex();
+    phones.forEach((p, i) => p.classList.toggle('carousel-active', i === active));
+    dots.forEach((d, i) => d.classList.toggle('active', i === active));
+  }
+
+  wrap.addEventListener('scroll', update, { passive: true });
+  // Set center phone active on load
+  setTimeout(() => {
+    if (window.innerWidth <= 640) {
+      phones[1].classList.add('carousel-active');
+      dots[1] && dots[1].classList.add('active');
+      dots[0] && dots[0].classList.remove('active');
+      // scroll to center the middle phone
+      const mid = phones[1];
+      const target = mid.offsetLeft - (wrap.offsetWidth - mid.offsetWidth) / 2;
+      wrap.scrollLeft = target;
+    }
+  }, 100);
 })();
 </script>
 </body>
